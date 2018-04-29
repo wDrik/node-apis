@@ -33,6 +33,18 @@ exports.getById = (req, res, next) => {
         })
 }
 
+exports.getByTag = (req, res, next) => {
+    Product.find({
+        tags: req.params.tag,
+        active: true
+    }, 'title description price slug active')
+        .then(data => {
+            res.status(200).send(data)
+        }).catch(error => {
+            res.status(400).send(error)
+        })
+}
+
 exports.post = (req, res, next) => {
     var product = new Product(req.body)
     product.save()
