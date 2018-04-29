@@ -2,7 +2,30 @@ const mongoose = require('mongoose')
 const Product = mongoose.model('Product')
 
 exports.get = (req, res, next) => {
-    Product.find({active: true}, 'title price slug active')
+    Product.find({
+            active: true}, 
+            'title price slug active')
+        .then(data => {
+            res.status(200).send(data)
+        }).catch(error => {
+            res.status(400).send(error)
+        })
+}
+
+exports.getBySlug = (req, res, next) => {
+    Product.findOne({ 
+            slug: req.params.slug,
+            active: true
+        }, 'title description price slug active')
+        .then(data => {
+            res.status(200).send(data)
+        }).catch(error => {
+            res.status(400).send(error)
+        })
+}
+
+exports.getById = (req, res, next) => {
+    Product.findById(req.params.id)
         .then(data => {
             res.status(200).send(data)
         }).catch(error => {
