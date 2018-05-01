@@ -62,17 +62,37 @@ exports.post = (req, res, next) => {
 }
 
 exports.put = (req, res, next) => {
-    let id = req.params.id
-    res.status(200).send({
-        id: id,
-        item: req.body
+    Product.findByIdAndUpdate(req.params.id, {
+        $set: {
+            title: req.body.title,
+            description: req.body.description,
+            slug: req.body.slug,
+            price: req.body.price
+        }
+    }).then(success => {
+        res.status(200).send({
+            message: 'Product updated successfully',
+            data: req.body
+        })
+    }).catch(error => {
+        res.status(400).send({
+            message: 'There was an error updating product',
+            data: error
+        })
     })
 }
 
 exports.delete = (req, res, next) => {
-    let id = req.params.id
-    res.status(200).send({
-        id: id,
-        item: req.body
-    })
+    Product.findOneAndRemove({ '_id': req.params.id })
+        .then(success => {
+            res.status(200).send({
+                message: 'Product successfully removed',
+                data: req.params.id
+            })
+        }).catch(error => {
+            res.status(400).send({
+                message: 'There was an error removing the product',
+                data: error
+            })
+        })
 }
