@@ -1,10 +1,10 @@
 const mongoose = require('mongoose')
 const Product = mongoose.model('Product')
+const ValidationContract = require('../validators/validator')
+const repository = require('../repositories/product-repository')
 
 exports.get = (req, res, next) => {
-    Product.find({
-            active: true}, 
-            'title price slug active')
+    repository.get()
         .then(data => {
             res.status(200).send(data)
         }).catch(error => {
@@ -13,10 +13,7 @@ exports.get = (req, res, next) => {
 }
 
 exports.getBySlug = (req, res, next) => {
-    Product.findOne({ 
-            slug: req.params.slug,
-            active: true
-        }, 'title description price slug active')
+    repository.getBySlug(req.params.slug)
         .then(data => {
             res.status(200).send(data)
         }).catch(error => {
@@ -25,7 +22,7 @@ exports.getBySlug = (req, res, next) => {
 }
 
 exports.getById = (req, res, next) => {
-    Product.findById(req.params.id)
+    repository.getById(req.params.id)
         .then(data => {
             res.status(200).send(data)
         }).catch(error => {
@@ -34,10 +31,7 @@ exports.getById = (req, res, next) => {
 }
 
 exports.getByTag = (req, res, next) => {
-    Product.find({
-        tags: req.params.tag,
-        active: true
-    }, 'title description price slug active')
+    repository.getByTag(req.params.tag)
         .then(data => {
             res.status(200).send(data)
         }).catch(error => {
@@ -46,8 +40,17 @@ exports.getByTag = (req, res, next) => {
 }
 
 exports.post = (req, res, next) => {
-    var product = new Product(req.body)
-    product.save()
+    let contract = new ValidationContract()
+    contract.hasMinLen(req.body.title, 3, 'The title must be at least three characters')
+    contract.hasMinLen(req.body.slug, 3, 'The slug must be at least three characters')
+    contract.hasMinLen(req.body.description, 3, 'The description must be at least three characters')
+
+    if (!contract.isValid()) {
+        res.status(400).send(contract.errors()).end()
+        return
+    }
+
+   repository.create(req.body)
         .then(success => {
             res.status(201).send({
                 message: 'Product successfully registered',
@@ -62,14 +65,8 @@ exports.post = (req, res, next) => {
 }
 
 exports.put = (req, res, next) => {
-    Product.findByIdAndUpdate(req.params.id, {
-        $set: {
-            title: req.body.title,
-            description: req.body.description,
-            slug: req.body.slug,
-            price: req.body.price
-        }
-    }).then(success => {
+    repository.update(req.params.id, req.body)
+    .then(success => {
         res.status(200).send({
             message: 'Product updated successfully',
             data: req.body
@@ -83,7 +80,7 @@ exports.put = (req, res, next) => {
 }
 
 exports.delete = (req, res, next) => {
-    Product.findOneAndRemove({ '_id': req.params.id })
+    repository.remove(req.params.id)
         .then(success => {
             res.status(200).send({
                 message: 'Product successfully removed',
