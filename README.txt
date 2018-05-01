@@ -13,3 +13,6 @@ Install nodemon on dev mode
 
 Install mongoose for DB noSQL connection
 λ npm install mongoose --save
+
+Install Guid
+λ npm install guid --save

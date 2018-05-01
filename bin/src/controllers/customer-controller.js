@@ -5,7 +5,7 @@ const repository = require('../repositories/customer-repository');
 
 exports.post = async (req, res, next) => {
     let contract = new ValidationContract();
-    contract.hasMinLen(req.body.name, 3, 'The title must be at least three characters');
+    contract.hasMinLen(req.body.name, 3, 'The name must be at least three characters');
     contract.isEmail(req.body.email, 'Invalid E-mail');
     contract.hasMinLen(req.body.password, 6, 'The pasword must be at least six characters');
 
