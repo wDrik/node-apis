@@ -16,3 +16,6 @@ Install mongoose for DB noSQL connection
 
 Install Guid
 λ npm install guid --save
+
+Install md5 - not recommended
+λ npm install md5 --save
