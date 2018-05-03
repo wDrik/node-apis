@@ -19,3 +19,6 @@ Install Guid
 
 Install md5 - not recommended
 λ npm install md5 --save
+
+Install JWT
+λ npm install jsonwebtoken@7.4.0 --save
